@@ -5,8 +5,8 @@
 		<title>Insert title here</title>
 	</head>
 	<body>
-		<h3>ser1 목록</h3>
-		<a href="/Ch07/user1/register">user 1 등록</a><br>
+		<h3>user3 목록</h3>
+		<a href="/Ch07/user3/register">user 3 등록</a><br>
 
 		<table border="1">
 			<tr>
@@ -22,8 +22,8 @@
 				<th th:text="${user.hp}"></th>
 				<th th:text="${user.age}"></th>
 				<th>
-					<a th:href="@{/user1/modify(uid = ${user.uid})}">수정</a>
-					<a th:href="@{/user1/delete(uid = ${user.uid})}">삭제</a>
+					<a th:href="@{/user3/modify(uid = ${user.uid})}">수정</a>
+					<a th:href="@{/user3/delete(uid = ${user.uid})}">삭제</a>
 				</th>
 			</tr>
 		</table>
