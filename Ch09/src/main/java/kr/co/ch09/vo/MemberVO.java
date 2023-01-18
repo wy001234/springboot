@@ -1,34 +1,29 @@
-package kr.co.ch08.vo;
-
-import java.time.LocalDateTime;
+package kr.co.ch09.vo;
 
 import javax.persistence.Entity;
-import javax.persistence.Id;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.CreationTimestamp;
-
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 @Getter
 @Setter
+@Entity
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
-@Entity
-@Table(name = "user2")
-public class User2VO {
-	@Id
+@Table(name = "member")
+public class MemberVO {
+	
 	private String uid;
 	private String pass;
 	private String name;
 	private String hp;
-	private int age;	
-	
-	@CreationTimestamp
-	private LocalDateTime rdate;
+	private String pos;
+	private String dep;
+	private String rdate;
+
 }

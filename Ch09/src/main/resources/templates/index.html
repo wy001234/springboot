@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="UTF-8">
+		<title>Insert title here</title>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+		<script th:src="@{/js/user1.js}"></script>
+		<script>
+			//user1 요청
+			$('.member_List1').click(function(){
+				
+				$.ajax({
+					'url':'/Ch09/mamber',
+					'method':'get',
+					'dataType':'json',
+					'success':function(data){
+						
+						console.log(data);
+					}
+				})
+				
+			});
+		</script>
+	</head>
+	<body>
+		<h3>Ch09.Spring REST 서비스 실습</h3>
+		
+		<h4>user1</h4>
+		<button class="user1_List1">user1 목록</button>
+		<button class="user1_List2">user1 목록</button>
+		<button class="user1_Register">user1 등록</button>
+		<button class="user1_Modify">user1 수정</button>
+		<button class="user1_Delete">user1 삭제</button>
+		
+		<h4>member</h4>
+		<button class="member_List1">member 목록1</button>
+		<button class="member_List2">member 목록2</button>
+		<button class="member_Register">member 등록</button>
+		<button class="member_Modify">member 수정</button>
+		<button class="member_Delete">member 삭제</button>
+	</body>
+</html>
