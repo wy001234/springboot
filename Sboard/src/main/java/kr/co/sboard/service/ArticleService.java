@@ -1,50 +1,106 @@
 package kr.co.sboard.service;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
-import org.apache.ibatis.annotations.Mapper;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import kr.co.ch07.vo.User1VO;
 import kr.co.sboard.dao.ArticleDAO;
-import kr.co.sboard.repository.ArticleRepo;
 import kr.co.sboard.vo.ArticleVO;
+import kr.co.sboard.vo.FileVO;
+import lombok.extern.slf4j.Slf4j;
 
-
+@Slf4j
 @Service
 public class ArticleService {
 	
 	@Autowired
 	private ArticleDAO dao;
 	
-	@Autowired
-	private ArticleRepo repo;
-	
-	public void insertArticle(ArticleVO vo) {
-		repo.save(vo);
-	};
-	
-	public ArticleVO selectArticle(String no) {
-		ArticleVO article = repo.findById(no).get();
+	public int insertArticle(ArticleVO vo) {
 		
-		return article;
-	};
-	
-	public List<ArticleVO> selectArticles(){
-		List<ArticleVO> article = repo.findAll();
+		int result = 0;
+		MultipartFile file = vo.getFname();
 		
-		return article;
-	};
-	
-	public void updateArticle(ArticleVO vo) {
-		repo.save(vo);
-	};
-	
-	public void deleteArticle(String no) {
+		if(file.isEmpty()) {
+			//파일이 첨부안했을 때
+			vo.setFile(0);
+			result =  dao.insertArticle(vo);
+		}else {
+			//파일 첨부 했을 때
+			vo.setFile(1);
+			result =  dao.insertArticle(vo);
+			
+			log.info("no :"+vo.getNo());
+			
+			//파일 업로드
+			FileVO fileVO = new FileVO();
+			fileVO.setParent(vo.getNo());
+			
+			fileUpload(file,fileVO);
+			
+			//파일 등록
+			dao.insertFile(fileVO);
+		}
 		
-		repo.deleteById(no);
-	};
+		return result;
+	}
+	
+	
+	public ArticleVO selectArticle(int no) {
+		return dao.selectArticle(no);
+	}
+	
+	public List<ArticleVO> selectArticles() {
+		
+		List<ArticleVO> articles = dao.selectArticles();
+		
+		return articles;
+	}
+	
+	public int updateArticle(ArticleVO vo) {
+		return dao.updateArticle(vo);
+	}
+	
+	public int deleteArticle(int no) {
+		return dao.deleteArticle(no);
+	}
+	
+	
+	
+	//파일 업로드
+	@Value("${spring.servlet.multipart.location}")
+	private String UploadPath; 
+	
+	public void fileUpload(MultipartFile file, FileVO fileVO) {
+		//시스템 파일경로
+		String path = new File(UploadPath).getAbsolutePath();
+		
+		// 새 파일명 생성
+		String oName = file.getOriginalFilename();
+		String ext = oName.substring(oName.lastIndexOf("."));
+		String nName = UUID.randomUUID().toString()+ext;
+		
+		//파일 저장
+		fileVO.setOriName(oName);
+		fileVO.setNewName(nName);
+		
+		try {
+			file.transferTo(new File(path, nName));
+		} catch (IllegalStateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
+	}
+	
 }
