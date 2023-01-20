@@ -21,10 +21,25 @@ public class ArticleController {
 	private ArticleService service;
 	
 	@GetMapping("list")
-	public String list(Principal principal, Model model) {
-		List<ArticleVO> articles = service.selectArticles();
+	public String list(Model model, String pg) {
+		
+		int currentPage = service.getCurrentPage(pg);
+		int start = service.getLimitStart(currentPage);
+		
+		int total = service.selectCountTotal();
+		int lastPageNum = service.getLastPageNum(total);
+		int pageStartNum = service.getPageStartNum(total, start);
+		int groups[] = service.getPageGroup(currentPage, lastPageNum);
+	
+		
+		List<ArticleVO> articles = service.selectArticles(start);
 		
 		model.addAttribute("articles", articles);
+		model.addAttribute("currentPage", currentPage);
+		model.addAttribute("lastPageNum", lastPageNum);
+		model.addAttribute("pageStartNum", pageStartNum);
+		model.addAttribute("groups", groups);
+		
 		
 		return "list";
 	}

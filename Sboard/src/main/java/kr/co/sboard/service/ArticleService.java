@@ -52,17 +52,24 @@ public class ArticleService {
 		return result;
 	}
 	
+	public int selectCountTotal() {
+		return dao.selectCountTotal();
+	}
+	
 	
 	public ArticleVO selectArticle(int no) {
 		return dao.selectArticle(no);
 	}
 	
-	public List<ArticleVO> selectArticles() {
-		
-		List<ArticleVO> articles = dao.selectArticles();
-		
-		return articles;
+	public List<ArticleVO> selectArticles(int start) {
+		return dao.selectArticles(start);
 	}
+	
+	public FileVO selectFile(int fno) {
+		return dao.selectFile(fno);
+	}
+	
+	
 	
 	public int updateArticle(ArticleVO vo) {
 		return dao.updateArticle(vo);
@@ -101,6 +108,90 @@ public class ArticleService {
 			e.printStackTrace();
 		}
 
+	}
+	
+	public FileVO fileUpload(ArticleVO vo) {
+		// 첨부 파일
+		MultipartFile file = vo.getFname();
+		FileVO fvo = null;
+		
+		if(!file.isEmpty()) {
+			// 시스템 경로
+			String path = new File(UploadPath).getAbsolutePath();
+			
+			// 새 파일명 생성
+			String oName = file.getOriginalFilename();
+			String ext = oName.substring(oName.lastIndexOf("."));
+			String nName = UUID.randomUUID().toString()+ext;
+			
+			// 파일 저장
+			try {
+				file.transferTo(new File(path, nName));
+			} catch (IllegalStateException e) {
+				log.error(e.getMessage());
+			} catch (IOException e) {
+				log.error(e.getMessage());
+			}
+			
+			fvo = FileVO.builder()
+					.parent(vo.getNo())
+					.oriName(oName)
+					.newName(nName)
+					.build();
+		}
+		
+		return fvo;
+	}
+	
+	
+	// 현재 페이지 번호
+	public int getCurrentPage(String pg) {
+		int currentPage = 1;
+		
+		if(pg != null) {
+			currentPage = Integer.parseInt(pg);
+		}
+		
+		return currentPage;
+	}
+	
+	// 페이지 시작값
+	public int getLimitStart(int currentPage) {
+		return (currentPage - 1) * 10;
+	}
+	
+	// 마지막 페이지 번호
+	public int getLastPageNum(int total) {
+		
+		int lastPageNum = 0;
+		
+		if(total % 10 == 0) {
+			lastPageNum = total / 10;			
+		}else {
+			lastPageNum = total / 10 + 1;
+		}
+		return lastPageNum;
+	}
+	
+	// 페이지 시작 번호
+	public int getPageStartNum(int total, int start) {
+		return total - start;
+	}
+	
+	// 페이지 그룹
+	public int[] getPageGroup(int currentPage, int lastPageNum) {
+		
+		int groupCurrent = (int) Math.ceil(currentPage / 10.0);
+		int groupStart = (groupCurrent - 1) * 10 + 1;
+		int groupEnd = groupCurrent * 10;
+		
+		if(groupEnd > lastPageNum) {
+			groupEnd = lastPageNum;
+		}
+		
+		int[] groups = {groupStart, groupEnd};
+		
+		return groups;
 	}
 	
 }
