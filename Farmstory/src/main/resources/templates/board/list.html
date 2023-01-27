@@ -1,4 +1,5 @@
 <th:block th:include="@{_header.html}"/>
+<th:block th:include="@{board/__${group}__.html}"/>
 <main id="board" class="list">
   <table border="0">
     <caption>글목록</caption>
@@ -10,19 +11,25 @@
       <th>조회</th>
     </tr>
 
-    <!--/*
-    <tr th:each="article,i:${articles}">
-        <td>[[${pageStartNum - i.index}]]</td>
-        <td><a th:href="@{/view(no=${article.no})}">[[${article.title}]] &#91;[[${article.comment}]]&#93;</a></td>
-        <td>[[${article.nick}]]</td>
-        <td>[[${article.rdate}]]</td>
-        <td>[[${article.hit}]]</td>
-    </tr>
-    */-->
+    <th:block th:if="${#lists.size(boards)}">
+        <tr th:each="board,i:${boards}">
+            <td>[[${pageStartNum - i.index}]]</td>
+            <td><a th:href="@{/view(no=${board.no})}">[[${board.title}]] &#91;[[${board.comment}]]&#93;</a></td>
+            <td>[[${board.nick}]]</td>
+            <td>[[${board.rdate}]]</td>
+            <td>[[${board.hit}]]</td>
+        </tr>
+    </th:block>
+      <th:block th:unless="${#lists.size(boards)}">
+        <tr>
+            <td colspan="5">작성된 게시글이 없습니다.</td>
+        </tr>
+      </th:block>
+
   </table>
 
   <div class="page">
-    <!--
+
     <th:block th:if="${groups[0]>1}">
         <a th:href="@{/list(pg=${groups[0]-1})}" class="prev">이전</a>
     </th:block>
@@ -33,10 +40,10 @@
     <th:block th:if="${groups[1]<lastPageNum}">
         <a th:href="@{/list(pg=${groups[1]+1})}" class="next">다음</a>
     </th:block>
-    -->
+
   </div>
 
-  <a th:href="#" class="btnWrite">글쓰기</a>
+  <a th:href="@{/board/write(group=${group},cate=${cate})}" class="btnWrite">글쓰기</a>
 
 </main>
 <!-- 내용 끝 -->
